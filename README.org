@@ -1,0 +1,25 @@
+* DagStat 2025 tutorial: Generalized pairwise comparisons
+
+*Instructors:* Johan Verbeeck (University of Hasselt, Belgium), Brice
+Ozenne (University of Copenhagen, Denmark)
+
+*Content*: you will find here the slides (=.pdf= file), codes (=.R=
+files) and data (=data= directory) used for the tutorial.
+
+* Installation of the software
+
+First you should download the R software
+(https://www.r-project.org/). Then you should download the BuyseTest
+package either on =CRAN= using:
+#+BEGIN_SRC R :exports both :eval never
+install.packages("BuyseTest")
+#+END_SRC
+
+or on =GitHub= using:
+#+BEGIN_SRC R :exports both :eval never
+library(remotes)
+install_github("bozenne/BuyseTest")
+#+END_SRC
+
+The CRAN version is the latest stable version and the Gtihub version
+is the latest development version.

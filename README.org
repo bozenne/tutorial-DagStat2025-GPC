@@ -3,8 +3,16 @@
 *Instructors:* Johan Verbeeck (University of Hasselt, Belgium), Brice
 Ozenne (University of Copenhagen, Denmark)
 
+*Location:* Berlin 10099, Humboldt-Universität zu Berlin, Unter den Linden 6, room D24-1.406.
+
+*Date:* 23/03/2025
+
 *Content*: you will find here the slides (=.pdf= file), codes (=.R=
 files) and data (=data= directory) used for the tutorial.
+- =BuyseTest_intro.R=: general introduction to the BuyseTest package
+- =revisit_CHARM.R=: analysis of composite enpoint (death, hospitalization) via GPC
+- =revisit_prodige.R=: assessing benefit-risk (death, quality of life) via GPC
+- =revisit_EB.R=: analysis of a cross-over design by GPC
 
 * Installation of the software
 

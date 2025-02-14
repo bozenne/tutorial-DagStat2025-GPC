@@ -1,0 +1,189 @@
+\documentclass[12pt]{article}
+\usepackage{amssymb}
+%\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subfigure}
+%\usepackage{epsfig}
+\usepackage{makeidx}
+%\usepackage{showidx}
+\usepackage{multicol}
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+\usepackage{amsmath,bm}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{nicefrac}
+\usepackage{geometry}
+\geometry{top=1cm,left=2.5cm,right=2.5cm}
+\usepackage{mathrsfs,bbm,enumerate}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{expl}{Example}
+
+
+\usepackage{dsfont} %% font
+\usepackage{url} %% refer to url
+\usepackage{listings}  %% code output
+\usepackage{fancyvrb}  %% code output
+\usepackage{xcolor}
+
+% R code
+\definecolor{colour_gray}{rgb}{0.7,0.7,0.7}
+\definecolor{colour_Rcomment}{rgb}{0,0.6,0}
+\definecolor{colour_Rline}{rgb}{0.5,0.5,0.5}
+\definecolor{colour_Rbold}{rgb}{0,0,0}
+\definecolor{colour_Rcode}{rgb}{0.58,0,0.82}
+\definecolor{colour_Rbackinput}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{Rstyle}{
+    backgroundcolor=\color{colour_Rbackinput},   
+    commentstyle=\color{colour_Rcomment},
+    keywordstyle=\color{colour_Rbold},
+    numberstyle=\tiny\color{colour_Rline},
+    stringstyle=\color{colour_Rbackinput},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=Rstyle}
+\DefineVerbatimEnvironment{Rcode}{Verbatim}{frame=single,label=R code,fontsize=\small,formatcom = {\color[rgb]{0,0,0.5}}}
+\DefineVerbatimEnvironment{Routput}{Verbatim}{frame=single,label=R output,fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+% https://texdoc.org/serve/fancyvrb/0
+
+\begin{document}
+
+\begin{Rcode}
+> install.packages("BuyseTest", quiet = TRUE)
+> library(BuyseTest)
+\end{Rcode}
+\begin{Routput}
+Loading required package: Rcpp
+BuyseTest version 3.0.6
+\end{Routput}
+
+\begin{Rcode}
+> set.seed(10)
+> data <- simBuyseTest(100, n.strata = 2)
+> head(data)
+\end{Rcode}
+\begin{Routput}
+      id treatment  eventtime status toxicity      score strata
+   <num>    <fctr>      <num>  <num>   <fctr>      <num> <fctr>
+1:     1         C 0.17392093      1      yes -2.1250686      a
+2:     2         C 0.16255166      0      yes  0.5211787      a
+3:     3         C 0.08302502      1      yes -0.0464229      b
+4:     4         C 0.22204972      0       no -1.1494717      b
+5:     5         C 0.11669726      1       no  0.6293383      a
+6:     6         C 0.11885540      1      yes -0.7264715      a
+\end{Routput}
+
+
+\begin{Rcode}
+> e.BT <- BuyseTest(treatment ~ tte(eventtime, status = status), 
+                    data = data)
+\end{Rcode}
+\begin{Routput}
+         Generalized Pairwise Comparisons
+
+Settings 
+- 2 groups  : Control = C and Treatment = T
+- 1 endpoint: 
+priority endpoint   type           operator             event       
+1        eventtime  time to event  higher is favorable  status (0 1)
+- right-censored pairs: probabilistic score based on the survival curves 
+
+Point estimation and calculation of the iid decomposition
+
+Estimation of the estimator's distribution 
+- method: moments of the U-statistic
+
+Gather the results in a S4BuyseTest object 
+\end{Routput}
+
+\clearpage
+
+\begin{Rcode}
+> summary(e.BT)
+\end{Rcode}
+\begin{Routput}
+	Generalized pairwise comparisons with 1 endpoint
+
+- statistic       : net treatment benefit  (delta: endpoint specific, Delta: global) 
+- null hypothesis : Delta == 0 
+- confidence level: 0.95 
+- inference       : H-projection of order 1 after atanh transformation 
+- treatment groups: T (treatment) vs. C (control) 
+- censored pairs  : probabilistic score based on the survival curves
+- results
+endpoint total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)  Delta CI [2.5% ; 97.5%] p.value 
+eventtime     100        57.39          42.61          0        0 0.1479  [-0.0293;0.3161] 0.10151 
+
+\end{Routput}
+
+\begin{Rcode}
+> confint(e.BT, statistic = "winRatio")
+\end{Rcode}
+\begin{Routput}
+          estimate        se  lower.ci upper.ci null   p.value
+eventtime 1.347081 0.2450411 0.9430953 1.924118    1 0.1014458
+\end{Routput}
+
+\begin{Rcode}
+> e.BThalf <- BuyseTest(treatment ~ tte(eventtime, status),
+                        data = data, add.halfNeutral = TRUE, trace = FALSE)
+> model.tables(e.BThalf, statistic = "favorable")
+\end{Rcode}
+\begin{Routput}
+   endpoint total favorable unfavorable neutral uninf     Delta  lower.ci  upper.ci   p.value
+1 eventtime   100  57.39388    42.60612       0     0 0.5739388 0.4852354 0.6581263 0.1019135
+\end{Routput}
+
+\begin{Rcode}
+> coef(e.BThalf, statistic = "winRatio")
+\end{Rcode}
+\begin{Routput}
+[1] 1.347081
+\end{Routput}
+
+\clearpage
+
+\begin{Rcode}
+> e.MBT <- BuyseTest(treatment ~ tte(eventtime, status, threshold = 1) + bin(toxicity, operator = "<0"),
+                     data = data, trace = 0)
+> model.tables(e.MBT)
+\end{Rcode}
+\begin{Routput}
+   endpoint threshold total favorable unfavorable neutral uninf   delta  Delta lower.ci upper.ci p.value
+1 eventtime     1e+00 100.0      10.2        2.55    87.2     0  0.0768 0.0768 -0.00928    0.162  0.0803
+3  toxicity     1e-12  87.2      18.8       24.72    43.7     0 -0.0590 0.0178 -0.13396    0.169  0.8192
+\end{Routput}
+
+\begin{Rcode}
+plot(e.MBT)
+\end{Rcode}
+
+\begin{Rcode}
+plot(e.MBT, type = "racetrack")
+\end{Rcode}
+
+
+\clearpage
+
+\begin{align*}
+	\widehat{U} - U = \underbrace{\frac{1}{m} \sum_{i=1}^{m} h_E(i)}_{\text{Experimental group}}&  + \underbrace{\frac{1}{n} \sum_{j=1}^{n} h_C(j)}_{\text{Control group}} + \underbrace{ \frac{1}{m n}  \sum_{i=1}^{n}\sum_{j=1}^{m} h_{EC}(i,j)}_{\text{Second order term}} \notag \\
+	\text{where for } i \in \{1,\ldots,m\}, h_E(i)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid X_i] - U \notag \\
+	j \in \{1,\ldots,n\}, h_C(j)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid Y_j] - U \notag  \\
+ \widehat{\sigma}_{\widehat{U}} \underbrace{\approx}_{\text{First order}} \frac{1}{m^2} \sum_{i=1}^2 h^2_E(i) &+ \frac{1}{n^2} \sum_{j=1}^n h^2_C(j)
+\end{align*}
+
+\end{document}

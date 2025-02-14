@@ -1,23 +1,37 @@
-## * install BuyseTest package
-## install.packages ("BuyseTest", quiet=TRUE)
 library(BuyseTest)
-## Default settings of the BuyseTest package
-BuyseTest.options(order.Hprojection=2) ## request the second order U-statistic inference
 
 ## * create a dummy dataset to showcase the BuyseTest function
 set.seed(10)
-data <- simBuyseTest(100)
+data <- simBuyseTest(100, n.strata = 2)
+head(data)
 
 ## * example of use with a single outcome
-BuyseTest(treatment ~ bin(toxicity, operator = "<0"), data = data)
+e.BT <- BuyseTest(treatment ~ tte(eventtime, status), data = data)
+summary(e.BT)
+summary(e.BT, percentage = FALSE) ## number of pairs
 
-BuyseTest(treatment ~ cont(score, operator = ">0", threshold = 2), data = data)
+## other measures of treatment effect
+confint(e.BT, statistic = "winRatio") ## win ratio
+e.BThalf <- BuyseTest(treatment ~ tte(eventtime, status),
+                      data = data, add.halfNeutral = TRUE, trace = FALSE)
+model.tables(e.BThalf, statistic = "favorable") ## probabilistic index
+coef(e.BThalf, statistic = "winRatio") ## win odds
 
-BuyseTest(treatment ~ tte(eventtime, status = "status", threshold = 7), data = data)
+## other types of outcomes
+BuyseTest(treatment ~ cont(score, threshold = 2), data = data)
+BuyseTest(treatment ~ bin(toxicity, operator = "<0")data = data)
+
+
 
 ## * example of use with a prioritized bivariate outcome
-e.BT <- BuyseTest(treatment ~ tte(eventtime, status = "status") + bin(toxicity, operator = "<0"),
-                  scoring.rule = "Gehan", data = data, trace = 0)
+e.MBT <- BuyseTest(treatment ~ tte(eventtime, status, threshold = 1) + bin(toxicity, operator = "<0"),
+                   data = data, trace = 0)
+model.tables(e.MBT)
+
+print(model.tables(e.MBT),digits = 3)
+
+plot(e.MBT)
+plot(e.MBT, type = "racetrack")
 
 
 ## ** Net Treatment Benefit

@@ -1,0 +1,67 @@
+\documentclass[12pt]{article}
+\usepackage{amssymb}
+%\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subfigure}
+%\usepackage{epsfig}
+\usepackage{makeidx}
+%\usepackage{showidx}
+\usepackage{multicol}
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+\usepackage{amsmath,bm}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{nicefrac}
+
+
+\usepackage{mathrsfs,bbm,enumerate}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{expl}{Example}
+
+
+\usepackage{dsfont} %% font
+\usepackage{url} %% refer to url
+\usepackage{listings}  %% code output
+\usepackage{fancyvrb}  %% code output
+
+% R code
+\definecolor{colour_gray}{rgb}{0.7,0.7,0.7}
+\definecolor{colour_Rcomment}{rgb}{0,0.6,0}
+\definecolor{colour_Rline}{rgb}{0.5,0.5,0.5}
+\definecolor{colour_Rbold}{rgb}{0,0,0}
+\definecolor{colour_Rcode}{rgb}{0.58,0,0.82}
+\definecolor{colour_Rbackinput}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{Rstyle}{
+    backgroundcolor=\color{colour_Rbackinput},   
+    commentstyle=\color{colour_Rcomment},
+    keywordstyle=\color{colour_Rbold},
+    numberstyle=\tiny\color{colour_Rline},
+    stringstyle=\color{colour_Rbackinput},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=Rstyle}
+\DefineVerbatimEnvironment{Rcode}{Verbatim}{frame=single,label=R code,fontsize=\small,formatcom = {\color[rgb]{0,0,0.5}}}
+\DefineVerbatimEnvironment{Routput}{Verbatim}{frame=single,label=R output,fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+% https://texdoc.org/serve/fancyvrb/0
+
+\begin{document}
+
+aaa
+
+
+\end{document}

@@ -176,14 +176,88 @@ plot(e.MBT)
 plot(e.MBT, type = "racetrack")
 \end{Rcode}
 
+\begin{Rcode}
+> e.BTindiv <- BuyseTest(treatment ~ tte(eventtime, status = status),
+                       data = data, keep.pairScore = TRUE)
+> getPairScore(e.BTindiv)
+\end{Rcode}
+\begin{Routput}
+       index.C index.T favorable unfavorable neutral        uninf weight
+    1:       1     101 0.9192694  0.08073064       0 0.000000e+00      1
+    2:       2     101 0.5695583  0.43044167       0 1.110223e-16      1
+    3:       3     101 1.0000000  0.00000000       0 0.000000e+00      1
+    4:       4     101 0.4969601  0.50303994       0 0.000000e+00      1
+    5:       5     101 1.0000000  0.00000000       0 0.000000e+00      1
+   ---                                                                  
+ 9996:      96     200 0.2858328  0.71416716       0 0.000000e+00      1
+ 9997:      97     200 0.8120919  0.18790807       0 0.000000e+00      1
+ 9998:      98     200 0.6171644  0.38283561       0 0.000000e+00      1
+ 9999:      99     200 0.6171644  0.38283561       0 0.000000e+00      1
+10000:     100     200 0.4596044  0.54039560       0 0.000000e+00      1
+\end{Routput}
+
+
+\begin{Rcode}
+> eBT.perm <- BuyseTest(treatment ~ cont(score), data = data,
+                      method.inference = "varexact permutation")
+> model.tables(eBT.perm)
+\end{Rcode}
+\begin{Routput}
+  endpoint total favorable unfavorable neutral uninf  Delta   p.value
+1    score   100     53.67       46.33       0     0 0.0734 0.3698664
+\end{Routput}
+
+
+\begin{Rcode}
+> wilcox.test(score ~ treatment, data = data, correct = FALSE)$p.value
+\end{Rcode}
+\begin{Routput}
+0.3698664
+\end{Routput}
+
+\clearpage
+
+\begin{Rcode}
+> rbind(confint(e.BTindiv, transformation = TRUE),
+        confint(e.BTindiv, transformation = FALSE)) 
+\end{Rcode}
+       
+\begin{Routput}
+            estimate         se    lower.ci  upper.ci null    p.value
+eventtime  0.1478776 0.08897931 -0.02931684 0.3160612    0 0.10150573
+eventtime1 0.1478776 0.08897931 -0.02651861 0.3222739    0 0.09652625
+\end{Routput}
+
+\begin{Rcode}
+> NTB <- coef(e.BTindiv)
+> sigma.NTB <- sqrt(crossprod(getIid(e.BTindiv)))
+> sigmaTrans.NTB <- sigma.NTB/(1-NTB^2)
+> c(estimate = NTB, se = sigmaTrans.NTB, p.value = 2*(1-pnorm(NTB/sigma.NTB)),
+    pTrans.value = 2*(1-pnorm(atanh(NTB)/sigmaTrans.NTB)))
+\end{Rcode}
+
+\begin{Routput}
+  estimate           se      p.value pTrans.value 
+0.14787764   0.09096860   0.09652625   0.10150573 
+\end{Routput}
+
+
+\begin{Rcode}
+BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
+                  statistic = "winRatio")
+\end{Rcode}
 
 \clearpage
 
 \begin{align*}
-	\widehat{U} - U = \underbrace{\frac{1}{m} \sum_{i=1}^{m} h_E(i)}_{\text{Experimental group}}&  + \underbrace{\frac{1}{n} \sum_{j=1}^{n} h_C(j)}_{\text{Control group}} + \underbrace{ \frac{1}{m n}  \sum_{i=1}^{n}\sum_{j=1}^{m} h_{EC}(i,j)}_{\text{Second order term}} \notag \\
-	\text{where for } i \in \{1,\ldots,m\}, h_E(i)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid X_i] - U \notag \\
-	j \in \{1,\ldots,n\}, h_C(j)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid Y_j] - U \notag  \\
- \widehat{\sigma}_{\widehat{U}} \underbrace{\approx}_{\text{First order}} \frac{1}{m^2} \sum_{i=1}^2 h^2_E(i) &+ \frac{1}{n^2} \sum_{j=1}^n h^2_C(j)
+	U - \Delta = \underbrace{\frac{1}{m} \sum_{i=1}^{m} h_E(i)}_{\text{Experimental group}}&  + \underbrace{\frac{1}{n} \sum_{j=1}^{n} h_C(j)}_{\text{Control group}} + \underbrace{ \frac{1}{m n}  \sum_{i=1}^{n}\sum_{j=1}^{m} h_{EC}(i,j)}_{\text{Second order term}} \notag \\
+	\text{where for } i \in \{1,\ldots,m\}, h_E(i)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid X_i] - \Delta \notag \\
+	j \in \{1,\ldots,n\}, h_C(j)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid Y_j] - \Delta \notag  \\
+ \widehat{\sigma}_{U} \underbrace{\approx}_{\text{First order}} \frac{1}{m^2} \sum_{i=1}^m h^2_E(i) &+ \frac{1}{n^2} \sum_{j=1}^n h^2_C(j)
+\end{align*}
+
+\begin{align*}
+	p^{\mathcal{P}} = \frac{1}{1+P} \left\{1+\sum_{p=1}^P \mathds{1}_{\left| \Delta^{\mathcal{P}(p)}\right| \geq \left|\Delta \right|} \right\}
 \end{align*}
 
 \end{document}

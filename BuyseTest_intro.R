@@ -6,7 +6,8 @@ data <- simBuyseTest(100, n.strata = 2)
 head(data)
 
 ## * example of use with a single outcome
-e.BT <- BuyseTest(treatment ~ tte(eventtime, status), data = data)
+e.BT <- BuyseTest(treatment ~ tte(eventtime, status),
+                  data = data)
 summary(e.BT)
 summary(e.BT, percentage = FALSE) ## number of pairs
 
@@ -33,30 +34,31 @@ print(model.tables(e.MBT),digits = 3)
 plot(e.MBT)
 plot(e.MBT, type = "racetrack")
 
-
-## ** Net Treatment Benefit
-summary(e.BT)
-model.tables(e.BT, percentage = TRUE)
-model.tables(e.BT, percentage = FALSE)
-confint(e.BT)
-## graphical display
-plot(e.BT, type = "hist")
-plot(e.BT, type = "pie")
-plot(e.BT, type = "racetrack")
-
-## ** Win ratio
-confint(e.BT, statistic="winRatio")
-
-## ** Probabilistic index (PI) and success odds (SO)
-e.BT2 <- BuyseTest(treatment ~ tte(eventtime, status = "status") + bin(toxicity, operator = "<0"),
-                   scoring.rule = "Gehan", data = data, trace = 0,
-                   add.halfNeutral = TRUE)
-confint(BT2, statistic = "favorable") ## PI
-confint(BT2, statistic = "winRatio") ## SO
-
 ## * Obtain score-matrix
-e.BT3 <- BuyseTest(treatment ~ tte(eventtime, status = "status") + bin(toxicity, operator = "<0"),
-                   scoring.rule = "Gehan", data = data, trace=0,
-                   keep.pairScore = TRUE)
-getPairScore(e.BT3)
+e.BTindiv <- BuyseTest(treatment ~ tte(eventtime, status = status),
+                   data = data, keep.pairScore = TRUE)
+getPairScore(e.BTindiv)
 
+
+## * Matching wilcoxon test
+eBT.perm <- BuyseTest(treatment ~ cont(score), data = data,
+                      method.inference = "varexact permutation")
+model.tables(eBT.perm)
+
+wilcox.test(score ~ treatment, data = data, correct = FALSE)$p.value
+
+## * No tanh transformation
+rbind(confint(e.BTindiv, transformation = TRUE),
+      confint(e.BTindiv, transformation = FALSE))
+
+NTB <- coef(e.BTindiv)
+sigma.NTB <- sqrt(crossprod(getIid(e.BTindiv)))
+sigmaTrans.NTB <- sigma.NTB/(1-NTB^2)
+c(estimate = NTB, se = sigmaTrans.NTB,
+  p.value = 2*(1-pnorm(NTB/sigma.NTB)),
+  pTrans.value = 2*(1-pnorm(atanh(NTB)/sigmaTrans.NTB)))
+##   estimate           se      p.value pTrans.value 
+## 0.14787764   0.09096860   0.09652625   0.10150573 
+
+## * update default behavior
+BuyseTest.options(method.inference = "permutation", n.resampling = 1000, statistic = "winRatio")

@@ -3,10 +3,14 @@ library(ggplot2) ## graphical illustration
 
 ## * load data
 data("prodige")
+data("prodige", packages = "BuyseTest")
 head(prodige)
 
-## albumin-bound paclitaxel (nab-paclitaxel) plus gemcitabine
-## vs gemcitabine alone
+
+## * Benefit risk analysis
+
+e.BT <- 
+
 
 ## * Extra: descriptive benefit-risk illustration
 library(ggpubr)

@@ -4,7 +4,7 @@ library(survminer)
 library(BuyseTest)
 
 ## * load data
-data("CHARM")
+data("CHARM", package = "BuyseTest")
 head(CHARM)
 
 ## * Tabulate number of events

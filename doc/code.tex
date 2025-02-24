@@ -17,7 +17,7 @@
 \usepackage{multirow}
 \usepackage{nicefrac}
 \usepackage{geometry}
-\geometry{top=1cm,left=2.5cm,right=2.5cm}
+\geometry{top=1cm,left=2.0cm,right=1.9cm}
 \usepackage{mathrsfs,bbm,enumerate}
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}
@@ -28,7 +28,10 @@
 \usepackage{url} %% refer to url
 \usepackage{listings}  %% code output
 \usepackage{fancyvrb}  %% code output
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
+
+\newcommand{\darkblue}{blue!80!black}
+
 
 % R code
 \definecolor{colour_gray}{rgb}{0.7,0.7,0.7}
@@ -247,6 +250,94 @@ BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
                   statistic = "winRatio")
 \end{Rcode}
 
+
+\begin{Rcode}
+> data("prodige", package = "BuyseTest")
+> head(prodige)
+\end{Rcode}
+
+\begin{Routput}
+    id treatment     OS statusOS    PFS statusPFS toxicity    sex
+<num>    <fctr>  <num>    <num>  <num>     <num>    <num> <fctr>
+1:     1         C 0.0349        1 0.0349         0        1      F
+2:     2         C 2.2790        0 2.2052         1        4      F
+3:     3         C 0.2008        1 0.2008         0        1      M
+4:     4         C 0.3418        1 0.3418         0        1      F
+\end{Routput}
+
+\begin{Rcode}
+> e.BR <- BuyseTest(treatment ~ tte(OS, statusOS, threshold = 6)
+                               + cont(toxicity, threshold = 2) 
+                               + tte(OS, statusOS, threshold = 1) 
+                               + cont(toxicity), data = prodige)
+> plot(e.BR)
+\end{Rcode}
+
+\begin{Rcode}
+> summary(e.BR)
+\end{Rcode}
+
+\begin{Rcode}
+> M.threshold <- cbind(OS_t6 = c(3:5,3:5),
+                       toxicity_t2 = c(2,2,2,3,3,3),
+                       OS_t2 = 1,
+                       toxicity = 0)
+> M.threshold
+\end{Rcode}
+\begin{Routput}
+     OS_t6 toxicity_t2 OS_t2 toxicity
+[1,]     3           2     1        0
+[2,]     4           2     1        0
+[3,]     5           2     1        0
+[4,]     3           3     1        0
+[5,]     4           3     1        0
+[6,]     5           3     1        0
+\end{Routput}
+
+\begin{Rcode}
+> eBR.Se <- sensitivity(e.BR, band = TRUE,
+                      threshold = M.threshold)
+> plot(eBR.Se)
+\end{Rcode}
+
+
+\begin{Rcode}
+> e.NTB_Gehan <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Gehan", 
+                         data = prodige, keep.pairScore = TRUE, trace = FALSE)
+> getPairScore(e.NTB_Gehan)[1:2,]
+\end{Rcode}
+\begin{Routput}
+   index.C index.T favorable unfavorable neutral uninf weight
+1:       1     403         1           0       0     0      1
+2:       2     403         0           0       0     1      1
+\end{Routput}
+
+\begin{Rcode}
+> e.NTB_Peron <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Peron", 
+                         data = prodige, keep.pairScore = TRUE, trace = FALSE)
+> getPairScore(e.NTB_Peron)[1:2,]
+\end{Rcode}
+\begin{Routput}
+   index.C index.T favorable unfavorable neutral        uninf weight
+1:       1     403 1.0000000     0.00000       0 0.0000000000      1
+2:       2     403 0.5286551     0.47068       0 0.0006648516      1
+\end{Routput}
+
+
+\begin{Rcode}
+> e.NTB_Latta <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Peron", 
+                           data = prodige, trace = FALSE,
+                           model.tte = prodlim(Hist(OS, statusOS) ~ 1, data = prodige))
+\end{Rcode}
+
+
+
+\begin{Rcode}
+> e.NTB_restricted <- BuyseTest(treatment ~ tte(OS, statusOS, restriction = 24), 
+                                scoring.rule = "Peron", data = prodige)
+\end{Rcode}
+
+
 \clearpage
 
 \begin{align*}
@@ -258,6 +349,23 @@ BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
 
 \begin{align*}
 	p^{\mathcal{P}} = \frac{1}{1+P} \left\{1+\sum_{p=1}^P \mathds{1}_{\left| \Delta^{\mathcal{P}(p)}\right| \geq \left|\Delta \right|} \right\}
+\end{align*}
+
+\begin{align*}	\mathbb{E}\left[\mathds{1}_{\textcolor{Orange}{X_{i}}>\textcolor{\darkblue}{Y_{j}}}|\textcolor{Orange}{\widetilde{X}_{i}},\textcolor{Orange}{\varepsilon_i},\textcolor{\darkblue}{\widetilde{Y}_{j}},\textcolor{\darkblue}{\eta_j}\right] = \left\{\begin{array}{c}
+		0.75 \text{ for } i=i_1 \\
+		1 \text{ for } i=i_2
+	\end{array}\right.
+\end{align*}
+
+\begin{align*}
+\left(
+\textcolor{Orange}{\widetilde{X}_{i_1}},
+\textcolor{Orange}{\widetilde{X}_{i_2}},
+\textcolor{\darkblue}{\widetilde{Y}_{j}},
+\textcolor{Orange}{\varepsilon_{i_1}},
+\textcolor{Orange}{\varepsilon_{i_2}},
+\textcolor{\darkblue}{\eta_{j}}
+\right) = (4.7,6.1,1.5,1,1,0)
 \end{align*}
 
 \end{document}

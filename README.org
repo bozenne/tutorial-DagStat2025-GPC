@@ -7,8 +7,8 @@ Ozenne (University of Copenhagen, Denmark)
 
 *Date:* 23/03/2025
 
-*Content*: you will find here the slides (=.pdf= file), codes (=.R=
-files) and data (=data= directory) used for the tutorial.
+*Content*: you will find here the slides (=doc= directory), codes
+(=.R= files) and data (=data= directory) used for the tutorial.
 - =BuyseTest_intro.R=: general introduction to the BuyseTest package
 - =revisit_CHARM.R=: analysis of composite enpoint (death, hospitalization) via GPC
 - =revisit_prodige.R=: assessing benefit-risk (death, quality of life) via GPC

@@ -62,3 +62,23 @@ c(estimate = NTB, se = sigmaTrans.NTB,
 
 ## * update default behavior
 BuyseTest.options(method.inference = "permutation", n.resampling = 1000, statistic = "winRatio")
+BuyseTest.options(reinitialise = TRUE)
+
+## * designing trial
+simFCT <- function(n.C, n.T){
+    out <- rbind(data.frame(Y=stats::rt(n.C, df = 5), group=0),
+                 data.frame(Y=stats::rt(n.T, df = 5) + 0.5, group=1))
+    return(out)
+}
+set.seed(10)
+simFCT(2,2)
+
+e.power <- powerBuyseTest(formula = group ~ cont(Y),
+                          sim = simFCT, sample.size = c(10,25,50),
+                          n.rep = 100, seed = 10, cpus = 1)
+summary(e.power)
+
+e.n <- powerBuyseTest(formula = group ~ cont(Y),
+                      sim = simFCT, power = 0.8,
+                      n.rep = c(1000,10), seed = 10, trace = 2, cpus = 1)
+summary(e.n)

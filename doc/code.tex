@@ -17,7 +17,7 @@
 \usepackage{multirow}
 \usepackage{nicefrac}
 \usepackage{geometry}
-\geometry{top=1cm,left=2.0cm,right=1.9cm}
+\geometry{top=1cm,left=4cm,right=4cm}
 \usepackage{mathrsfs,bbm,enumerate}
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}
@@ -30,7 +30,17 @@
 \usepackage{fancyvrb}  %% code output
 \usepackage[dvipsnames]{xcolor}
 
+\definecolor{colour_pink}{rgb}{1,0,1}
+\newcommand{\darkgreen}{green!70!black}
 \newcommand{\darkblue}{blue!80!black}
+\newcommand{\Ysurv}{\textcolor{\darkblue}{S}}
+\newcommand{\yobs}{\textcolor{\darkblue}{\tilde{y}_j}}
+\newcommand{\Ycens}{\textcolor{\darkblue}{\omega_j}}
+
+\newcommand{\Xsurv}{\textcolor{orange}{S}}
+\newcommand{\xobs}{\textcolor{orange}{\tilde{y}_i}}
+\newcommand{\Xcens}{\textcolor{orange}{\omega_i}}
+
 
 
 % R code
@@ -63,6 +73,10 @@
 \DefineVerbatimEnvironment{Routput}{Verbatim}{frame=single,label=R output,fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
 % https://texdoc.org/serve/fancyvrb/0
 
+\usepackage[skins,theorems]{tcolorbox}
+\tcbset{highlight math style={enhanced,
+		colframe=red,colback=white,arc=0pt,boxrule=1pt}}
+
 \begin{document}
 
 \begin{Rcode}
@@ -71,7 +85,7 @@
 \end{Rcode}
 \begin{Routput}
 Loading required package: Rcpp
-BuyseTest version 3.0.6
+BuyseTest version 3.1.0
 \end{Routput}
 
 \begin{Rcode}
@@ -267,9 +281,10 @@ BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
 
 \begin{Rcode}
 > e.BR <- BuyseTest(treatment ~ tte(OS, statusOS, threshold = 6)
-                               + cont(toxicity, threshold = 2) 
-                               + tte(OS, statusOS, threshold = 1) 
-                               + cont(toxicity), data = prodige)
+                + cont(toxicity, operator = "<0", threshold = 2) 
+                + tte(OS, statusOS, threshold = 1) 
+                + cont(toxicity, operator = "<0"), 
+                    data = prodige)
 > plot(e.BR)
 \end{Rcode}
 
@@ -340,10 +355,101 @@ BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
 
 \clearpage
 
+\begin{Rcode}
+> simFCT <- function(n.C, n.T){
+   out <- rbind(data.frame(Y=stats::rt(n.C, df = 5), group=0),
+                data.frame(Y=stats::rt(n.T, df = 5) + 0.5, group=1)
+                )
+   return(out)
+}
+> set.seed(10)
+> simFCT(2,2)
+\end{Rcode}
+\begin{Routput}
+            Y group
+1  0.02241932     0
+2 -1.07273566     0
+3  1.26072274     1
+4  0.24187644     1
+\end{Routput}
+
+\begin{Rcode}
+> e.power <- powerBuyseTest(formula = group ~ cont(Y),
+                           sim = simFCT, sample.size = c(10,25,50),
+                           n.rep = 100, seed = 10, cpus = 1)
+> summary(e.power)
+\end{Rcode}
+
+\begin{Routput}
+         Simulation study with Generalized pairwise comparison
+with 100 samples
+
+- net benefit statistic (null hypothesis Delta=0)
+endpoint threshold n.T n.C mean.estimate sd.estimate mean.se rejection.rate
+       Y     1e-12  10  10        0.2258      0.2651  0.2475           0.12
+                    25  25        0.2297      0.1455  0.1585           0.23
+                    50  50        0.2331      0.1089  0.1118           0.57
+
+n.T          : number of observations in the treatment group
+n.C          : number of observations in the control group
+mean.estimate: average estimate over simulations
+sd.estimate  : standard deviation of the estimate over simulations
+mean.se      : average estimated standard error of the estimate over simulations
+rejection    : frequency of the rejection of the null hypothesis over simulations
+(standard error: H-projection of order 1| p-value: after transformation) 
+\end{Routput}
+
+
+\begin{Rcode}
+> e.n <- powerBuyseTest(formula = group ~ cont(Y),
+                        sim = simFCT, power = 0.8,
+                        n.rep = c(1000,10), seed = 10, trace = 2, cpus = 1)
+> summary(e.n)
+\end{Rcode}
+
+\begin{Routput}
+	Determination of the sample using a large sample (T=2000, C=2000)  
+
+|++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=06s  
+- estimated effect (variance): 0.23748050.2612110.241430.24983750.2455650.238980.22754850.23496450.2462670.2383605 (1.2477591.2259471.2445871.2350031.239351.2433711.2564371.250751.2374461.24375)
+- estimated sample size      : m=84, n=84
+
+Simulation study with BuyseTest 
+
+Simulation
+- repetitions: 1000
+- cpus       : 1
+
+|++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=16s  
+\end{Routput}
+
+\begin{Routput}
+  Sample size calculation with Generalized pairwise comparison
+  for a power of 0.8 and type 1 error rate of 0.05 
+
+- estimated sample size (mean [min;max]): 84 [71;96] controls
+                                          84 [71;96] treated
+
+- net benefit statistic (null hypothesis Delta=0)
+endpoint threshold n.T n.C mean.estimate sd.estimate mean.se rejection.rate
+       Y     1e-12  84  84        0.2441      0.0864  0.0859          0.773
+
+n.T          : number of observations in the treatment group
+n.C          : number of observations in the control group
+mean.estimate: average estimate over simulations
+sd.estimate  : standard deviation of the estimate over simulations
+mean.se      : average estimated standard error of the estimate over simulations
+rejection    : frequency of the rejection of the null hypothesis over simulations
+(standard error: H-projection of order 1| p-value: after transformation) 
+\end{Routput}
+
+
+\clearpage
+
 \begin{align*}
 	U - \Delta = \underbrace{\frac{1}{m} \sum_{i=1}^{m} h_E(i)}_{\text{Experimental group}}&  + \underbrace{\frac{1}{n} \sum_{j=1}^{n} h_C(j)}_{\text{Control group}} + \underbrace{ \frac{1}{m n}  \sum_{i=1}^{n}\sum_{j=1}^{m} h_{EC}(i,j)}_{\text{Second order term}} \notag \\
-	\text{where for } i \in \{1,\ldots,m\}, h_E(i)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid X_i] - \Delta \notag \\
-	j \in \{1,\ldots,n\}, h_C(j)&=\mathbb{E}[\mathds{1}_{Y_i > X_j} - \mathds{1}_{X_i > Y_j}\mid Y_j] - \Delta \notag  \\
+	\text{where for } i \in \{1,\ldots,m\}, h_E(i)&=\mathbb{E}[\mathds{1}_{Y^E_i > Y^C_j} - \mathds{1}_{Y^C_j > Y^E_i}\mid Y^E_i] - \Delta \notag \\
+	j \in \{1,\ldots,n\}, h_C(j)&=\mathbb{E}[\mathds{1}_{Y^E_i > Y^C_j} - \mathds{1}_{Y^C_j > Y^E_i}\mid Y^C_j] - \Delta \notag  \\
  \widehat{\sigma}_{U} \underbrace{\approx}_{\text{First order}} \frac{1}{m^2} \sum_{i=1}^m h^2_E(i) &+ \frac{1}{n^2} \sum_{j=1}^n h^2_C(j)
 \end{align*}
 
@@ -351,7 +457,7 @@ BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
 	p^{\mathcal{P}} = \frac{1}{1+P} \left\{1+\sum_{p=1}^P \mathds{1}_{\left| \Delta^{\mathcal{P}(p)}\right| \geq \left|\Delta \right|} \right\}
 \end{align*}
 
-\begin{align*}	\mathbb{E}\left[\mathds{1}_{\textcolor{Orange}{X_{i}}>\textcolor{\darkblue}{Y_{j}}}|\textcolor{Orange}{\widetilde{X}_{i}},\textcolor{Orange}{\varepsilon_i},\textcolor{\darkblue}{\widetilde{Y}_{j}},\textcolor{\darkblue}{\eta_j}\right] = \left\{\begin{array}{c}
+\begin{align*}	\mathbb{P}\left[\textcolor{Orange}{Y^E_{i}}>\textcolor{\darkblue}{Y^C_{j}}|\textcolor{Orange}{\widetilde{Y}^E_{i}},\textcolor{Orange}{\Omega^E_i},\textcolor{\darkblue}{\widetilde{Y}^C_{j}},\textcolor{\darkblue}{\Omega^C_j}\right] = \left\{\begin{array}{c}
 		0.75 \text{ for } i=i_1 \\
 		1 \text{ for } i=i_2
 	\end{array}\right.
@@ -359,13 +465,79 @@ BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
 
 \begin{align*}
 \left(
-\textcolor{Orange}{\widetilde{X}_{i_1}},
-\textcolor{Orange}{\widetilde{X}_{i_2}},
-\textcolor{\darkblue}{\widetilde{Y}_{j}},
-\textcolor{Orange}{\varepsilon_{i_1}},
-\textcolor{Orange}{\varepsilon_{i_2}},
-\textcolor{\darkblue}{\eta_{j}}
+\textcolor{Orange}{\widetilde{Y}^E_{i_1}},
+\textcolor{Orange}{\widetilde{Y}^E_{i_2}},
+\textcolor{\darkblue}{\widetilde{Y}^C_{j}},
+\textcolor{Orange}{\Omega^E_{i_1}},
+\textcolor{Orange}{\Omega^E_{i_2}},
+\textcolor{\darkblue}{\Omega^C_{j}}
 \right) = (4.7,6.1,1.5,1,1,0)
 \end{align*}
+
+\(U_{ij}=\mathbb{P}\left[\textcolor{Orange}{Y_{i}}>\textcolor{\darkblue}{Y_{j}}+\tau|\textcolor{Orange}{\widetilde{y}_{i}},\textcolor{Orange}{\omega_i},\textcolor{\darkblue}{\widetilde{y}_{j}},\textcolor{\darkblue}{\omega_j}\right]-\mathbb{P}\left[\textcolor{\darkblue}{Y_{j}}>\textcolor{Orange}{Y_{i}}+\tau|\textcolor{Orange}{\widetilde{y}_{i}},\textcolor{Orange}{\omega_i},\textcolor{\darkblue}{\widetilde{y}_{j}},\textcolor{\darkblue}{\omega_j}\right]\)
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{l@{}l@{}l|lll}
+		(&$\Xcens$, & $\, \Ycens$) & $\xobs - \yobs \leq -\tau$ & $ |\xobs-\yobs| < \tau$ & $\xobs - \yobs \geq \tau$ \\ \hline 
+		&&&&&\\ [-3mm]
+		(&1,&1) & \(-1\) & \(0\) & \(1\) \\ [4mm]
+		(&0,&1) & \(\frac{\Xsurv(\yobs+\tau)+\Xsurv(\yobs-\tau)}{\Xsurv(\xobs)}-1\) & $\frac{\Xsurv(\yobs + \tau)}{\Xsurv(\xobs)}$ & \(1\) \\ [4mm]
+		(&1,&0) & \(-1\) &  $-\frac{\Ysurv(\xobs + \tau)}{\Ysurv(\yobs)}$ & \(1-\frac{\Ysurv(\xobs+\tau)+\Ysurv(\xobs-\tau)}{\Ysurv(\yobs)}\) \\ [4mm]
+		(&0,&0) & \(\ldots\)
+		& \(\frac{\int_{\xobs}^{\infty} \Ysurv(t+\tau)d\Xsurv(t)-\int_{\yobs}^{\infty} \Xsurv(t+\tau)d\Ysurv(t)}{\Xsurv(\xobs)\Ysurv(\yobs)}\)
+		& \(\ldots\)
+		\\ [-4mm]
+		&&&&&\\ \hline
+	\end{tabular}
+\end{table}
+%\(-\frac{\int_{t>\yobs}^{\infty} \Xsurv(t+\tau) d\Ysurv(t)}{\Xsurv(\xobs)\Ysurv(\yobs)}\)
+% \(-\frac{\int_{t>\yobs}^{\infty} \Xsurv(t+\tau) d\Ysurv(t)}{\Xsurv(\xobs)\Ysurv(\yobs)}\)
+% \( 1 - \frac{\Ysurv(\xobs-\tau)}{\Ysurv(\yobs)} - \frac{\int_{t>\xobs-\tau}^{\infty} \Xsurv(t+\tau) d\Ysurv(t)}{\Xsurv(\xobs)\Ysurv(\yobs)}\)
+
+\begin{align*}
+	\mathbb{P}\left[\textcolor{Orange}{Y^E}>\textcolor{\darkblue}{Y^C}\right]-\mathbb{P}\left[\textcolor{\darkblue}{Y^C}>\textcolor{Orange}{Y^E}\right]
+\end{align*}
+
+\begin{align*}
+	\mathbb{P}\left[\textcolor{Orange}{Y^E}>\textcolor{\darkblue}{Y^C}\right]+0.5\mathbb{P}\left[\textcolor{Orange}{Y^E}=\textcolor{\darkblue}{Y^C}\right]
+\end{align*}
+
+\begin{align*}
+	\frac{\mathbb{P}\left[\textcolor{Orange}{Y^E}>\textcolor{\darkblue}{Y^C}\right]+0.5\mathbb{P}\left[\textcolor{Orange}{Y^E}=\textcolor{\darkblue}{Y^C}\right]}{
+	\mathbb{P}\left[\textcolor{\darkblue}{Y^C}>\textcolor{Orange}{Y^E}\right]+0.5\mathbb{P}\left[\textcolor{\darkblue}{Y^C}=\textcolor{Orange}{Y^E}\right]}
+\end{align*}
+
+\begin{align*}
+	\frac{\mathbb{P}\left[\textcolor{Orange}{Y^E}>\textcolor{\darkblue}{Y^C}\right]}{\mathbb{P}\left[\textcolor{\darkblue}{Y^C}>\textcolor{Orange}{Y^E}\right]}
+\end{align*}
+
+
+\begin{align*}
+	\delta_1 = &\mathbb{P}\left[\textcolor{Orange}{Y_1^E}>\textcolor{\darkblue}{Y_1^C}+\tau_1\right]-\mathbb{P}\left[\textcolor{\darkblue}{Y_1^C}>\textcolor{Orange}{Y_1^E}+\tau_1\right] \\
+	\delta_2 = &\mathbb{P}\left[\textcolor{Orange}{Y_2^E}>\textcolor{\darkblue}{Y_2^C}\big| \, |\textcolor{Orange}{Y_1^E}-\textcolor{\darkblue}{Y_1^C}| \leq \tau_1\right]-\mathbb{P}\left[\textcolor{\darkblue}{Y_2^C}>\textcolor{Orange}{Y_2^E}\big| \, |\textcolor{Orange}{Y_1^E}-\textcolor{\darkblue}{Y_1^C}| \leq \tau_1\right] 
+\end{align*}
+
+
+
+\begin{align*}
+	\Delta_1 &= \delta_1 \\
+		\Delta_2 &= \delta_1 + \delta_2
+\end{align*}
+
+\begin{minipage}{3.5cm}
+\begin{tcolorbox}[ams align*, colback=white, colframe=\darkgreen]
+	\Delta_1 &= \delta_1 \\
+	\Delta_2 &= \delta_1 + \delta_2
+\end{tcolorbox}
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{14cm}
+	\begin{tcolorbox}[ams align*, colback=white, colframe=colour_pink]
+	\delta_1 = &\mathbb{P}\left[\textcolor{Orange}{Y_1^E}>\textcolor{\darkblue}{Y_1^C}+\tau_1\right]-\mathbb{P}\left[\textcolor{\darkblue}{Y_1^C}>\textcolor{Orange}{Y_1^E}+\tau_1\right] \\
+	\delta_2 = &\mathbb{P}\left[\textcolor{Orange}{Y_2^E}>\textcolor{\darkblue}{Y_2^C}\big| \, |\textcolor{Orange}{Y_1^E}-\textcolor{\darkblue}{Y_1^C}| \leq \tau_1\right]-\mathbb{P}\left[\textcolor{\darkblue}{Y_2^C}>\textcolor{Orange}{Y_2^E}\big| \, |\textcolor{Orange}{Y_1^E}-\textcolor{\darkblue}{Y_1^C}| \leq \tau_1\right] 
+	\end{tcolorbox}
+\end{minipage}
 
 \end{document}

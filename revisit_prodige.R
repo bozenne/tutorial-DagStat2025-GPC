@@ -26,20 +26,22 @@ cbind(estimate = coef(e.glmTox), confint(e.glmTox), p.value = summary(e.glmTox)$
 chisq.test(table(prodige$toxicity,prodige$treatment))
 ## X-squared = 42.015, df = 5, p-value = 5.849e-08
 
-## ** GPC alternative (different estimand)
+## ** GPC alternative (different estimands)
 
 e.NTB <- BuyseTest(treatment ~ tte(OS, statusOS), data = prodige)
 summary(e.NTB)
  ## endpoint total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)  Delta CI [2.5% ; 97.5%]  p.value  
  ##       OS      100        54.74          45.23          0     0.03 0.0951   [0.0084;0.1804] 0.031662 *
 
-e.NTH <- BuyseTest(treatment ~ cont(toxicity), data = prodige)
+e.NTH <- BuyseTest(treatment ~ cont(toxicity, operator = "<0"), data = prodige)
 summary(e.NTH)
- ## endpoint total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)  Delta CI [2.5% ; 97.5%]    p.value    
- ## toxicity      100        47.96          33.68      18.36        0 0.1427   [0.0656;0.2181] 0.00030318 ***
+ ## endpoint total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)   Delta CI [2.5% ; 97.5%]    p.value    
+ ## toxicity      100        33.68          47.96      18.36        0 -0.1427 [-0.2181;-0.0656] 0.00030318 ***
 
 ## * Benefit risk analysis
-e.BR <- BuyseTest(treatment ~ tte(OS, statusOS, threshold = 6) + cont(toxicity, threshold = 2) + tte(OS, statusOS, threshold = 2) + cont(toxicity), data = prodige)
+## ** main
+e.BR <- BuyseTest(treatment ~ tte(OS, statusOS, threshold = 6) + cont(toxicity, operator = "<0", threshold = 2) + tte(OS, statusOS, threshold = 2) + cont(toxicity, operator = "<0"),
+                  data = prodige)
 plot(e.BR, type = "hist")
 plot(e.BR, type = "racetrack")
 
@@ -51,11 +53,11 @@ data.frame(favorable = round(table.BR$favorable,1),
            Delta = paste0(round(100*table.BR$Delta,1)," (p=",format.pval(table.BR$p.value, digits = 3, eps = 1e-5),")"))
 ##   favorable unfavorable neutral delta             Delta
 ## 1      28.2        15.6    56.2  12.7 12.7 (p=0.000401)
-## 2      13.0        10.3    32.9   2.7 15.4 (p=9.96e-05)
-## 3       5.1         5.0    22.8   0.1 15.4 (p=0.000210)
-## 4       4.7         5.7    12.3  -1.0 14.4 (p=0.000805)
-sum(table.BR$favorable)       ## [1] 51.01921
-sum(table.BR$unfavorable)      ## [1] 36.63571
+## 2      10.3        13.0    32.9  -2.7   10 (p=0.011969)
+## 3       5.1         5.0    22.8   0.1 10.1 (p=0.015047)
+## 4       5.7         4.7    12.3   1.0 11.1 (p=0.010297)
+sum(table.BR$favorable)       ## [1] 49.3886
+sum(table.BR$unfavorable)      ## [1] 38.26632
 
 ## other measure of treatment effect
 summary(e.BR, statistic = "winRatio")
@@ -66,9 +68,7 @@ coef(e.BR, statistic = "winRatio", cumulative = FALSE)
 ##     OS_t6 toxicity_t2       OS_t2    toxicity 
 ## 1.8157421   1.2595728   1.0131848   0.8173871 
 
-## sensitivity analysis
-
-
+## ** sensitivity analysis
 ## requires the riskRegression package to be install for multiple testing adjustment
 M.threshold <- cbind(OS_t6 = c(3:5,3:5),
                      toxicity_t2 = c(2,2,2,3,3,3),
@@ -94,34 +94,21 @@ e.NTB_Efron <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Efron", 
 e.NTB_Latta <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Peron", data = prodige, trace = FALSE,
                          model.tte = prodlim(Hist(OS, statusOS) ~ 1, data = prodige))
 
-## conservative constrain
-prodige2 <- prodige[order(prodige$OS)]
-prodige2[, last := (OS==max(OS)),by=treatment]
-prodige2[treatment == "C" & last, c("statusOS","OS") := .(1,50)]
-prodige2[treatment == "T" & last, statusOS := 1]
-e.cKM <- prodlim(Hist(OS, statusOS) ~ treatment, data = prodige2)
-attr(e.cKM,"iidNuisance") <- TRUE ## account for uncertainty in the surv model when evaluating GPC
-plot(e.cKM)
-
-e.NTB_conservative <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Peron", data = prodige, trace = FALSE,
-                                model.tte = e.cKM)
-
-
 M.results <- rbind(Gehan = model.tables(e.NTB_Gehan),
                    Peron = model.tables(e.NTB_Peron),
                    Efron = model.tables(e.NTB_Efron),
-                   Latta = model.tables(e.NTB_Latta),
-                   conservative = model.tables(e.NTB_conservative))
+                   Latta = model.tables(e.NTB_Latta))
 print(M.results, digits = 3)
 ##              endpoint total favorable unfavorable  neutral  uninf  Delta lower.ci upper.ci p.value
 ## Gehan              OS   100      35.2        31.8 0.000591 33.090 0.0339 -0.03057   0.0981  0.3026
 ## Peron              OS   100      54.7        45.2 0.000967  0.025 0.0951  0.00838   0.1804  0.0317
 ## Efron              OS   100      54.7        45.2 0.025971  0.000 0.0951  0.00834   0.1805  0.0317
 ## Latta              OS   100      52.8        47.0 0.099400  0.049 0.0582 -0.01539   0.1313  0.1210
-## conservative       OS   100      54.7        45.3 0.001023  0.000 0.0949  0.01918   0.1695  0.0141 ## approximate p-value: consider using resampling (prodlim+BuyseTest)
 
 e.NTB_restricted <- BuyseTest(treatment ~ tte(OS, statusOS, restriction = 24), scoring.rule = "Peron", data = prodige, trace = FALSE)
 model.tables(e.NTB_restricted)
+##   endpoint restriction total favorable unfavorable   neutral uninf      Delta    lower.ci  upper.ci    p.value
+## 1       OS          24   100  54.50976    45.04014 0.4501017     0 0.09469619 0.008047478 0.1799335 0.03224151
 
 ## * Extra: more precise comparison of proportions
 library(exact2x2)

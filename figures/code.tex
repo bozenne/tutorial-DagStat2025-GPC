@@ -17,7 +17,7 @@
 \usepackage{multirow}
 \usepackage{nicefrac}
 \usepackage{geometry}
-\geometry{top=1cm,left=4cm,right=4cm}
+\geometry{top=1cm,left=0.9cm,right=0.9cm}
 \usepackage{mathrsfs,bbm,enumerate}
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}
@@ -357,38 +357,44 @@ BuyseTest.options(method.inference = "permutation", n.resampling = 1000,
 
 \begin{Rcode}
 > simFCT <- function(n.C, n.T){
-   out <- rbind(data.frame(Y=stats::rt(n.C, df = 5), group=0),
-                data.frame(Y=stats::rt(n.T, df = 5) + 0.5, group=1)
-                )
-   return(out)
+   df.C <- data.frame(id = paste0("C",1:n.C), group = 0,
+                      tox = sample(1:6, n.C, replace=TRUE, 
+                                   prob = c(16.09, 15.42, 33.26, 26.18, 8.38, 0.67)/100),                       
+                      time = rweibull(n.C, scale = 9.995655, shape = 1.28993),
+                      event = 1)
+   df.T <- data.frame(id = paste0("T",1:n.T), group = 1,
+                      tox = sample(1:6, n.T, replace=TRUE, 
+                                   prob = c(8.21, 13.09, 31.29, 30.87, 12.05, 4.49)/100),                       
+                      time = rweibull(n.T, scale = 13.16543, shape = 1.575269),
+                      event = 1)
+   return(rbind(df.C,df.T))
 }
 > set.seed(10)
 > simFCT(2,2)
 \end{Rcode}
 \begin{Routput}
-            Y group
-1  0.02241932     0
-2 -1.07273566     0
-3  1.26072274     1
-4  0.24187644     1
+  id group tox      time event
+1 C1     0   4  8.821945     1
+2 C2     0   3  4.591318     1
+3 T1     1   3 15.495787     1
+4 T2     1   3 15.557655     1
 \end{Routput}
 
 \begin{Rcode}
-> e.power <- powerBuyseTest(formula = group ~ cont(Y),
+> e.power <- powerBuyseTest(group ~ tte(time,event,threshold = 1)  + cont(tox, operator = "<0"),
                            sim = simFCT, sample.size = c(10,25,50),
                            n.rep = 100, seed = 10, cpus = 1)
 > summary(e.power)
 \end{Rcode}
 
 \begin{Routput}
-         Simulation study with Generalized pairwise comparison
-with 100 samples
+        Simulation study with Generalized pairwise comparison with 100 samples
 
 - net benefit statistic (null hypothesis Delta=0)
 endpoint threshold n.T n.C mean.estimate sd.estimate mean.se rejection.rate
-       Y     1e-12  10  10        0.2258      0.2651  0.2475           0.12
-                    25  25        0.2297      0.1455  0.1585           0.23
-                    50  50        0.2331      0.1089  0.1118           0.57
+     tox     1e-12  10  10        0.2156      0.2656  0.2468           0.13
+                    25  25        0.2032      0.1677  0.1582            0.2
+                    50  50        0.2015      0.1228  0.1121           0.43
 
 n.T          : number of observations in the treatment group
 n.C          : number of observations in the control group
@@ -401,38 +407,22 @@ rejection    : frequency of the rejection of the null hypothesis over simulation
 
 
 \begin{Rcode}
-> e.n <- powerBuyseTest(formula = group ~ cont(Y),
+> e.n <- powerBuyseTest(group ~ tte(time,event, threshold = 1) + cont(tox, operator = "<0"),
                         sim = simFCT, power = 0.8,
                         n.rep = c(1000,10), seed = 10, trace = 2, cpus = 1)
 > summary(e.n)
 \end{Rcode}
 
 \begin{Routput}
-	Determination of the sample using a large sample (T=2000, C=2000)  
+        Sample size calculation with Generalized pairwise comparison
+        for a power of 0.8 and type 1 error rate of 0.05 
 
-|++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=06s  
-- estimated effect (variance): 0.23748050.2612110.241430.24983750.2455650.238980.22754850.23496450.2462670.2383605 (1.2477591.2259471.2445871.2350031.239351.2433711.2564371.250751.2374461.24375)
-- estimated sample size      : m=84, n=84
-
-Simulation study with BuyseTest 
-
-Simulation
-- repetitions: 1000
-- cpus       : 1
-
-|++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=16s  
-\end{Routput}
-
-\begin{Routput}
-  Sample size calculation with Generalized pairwise comparison
-  for a power of 0.8 and type 1 error rate of 0.05 
-
-- estimated sample size (mean [min;max]): 84 [71;96] controls
-                                          84 [71;96] treated
+- estimated sample size (mean [min;max]): 126 [91;155] controls
+126 [91;155] treated
 
 - net benefit statistic (null hypothesis Delta=0)
 endpoint threshold n.T n.C mean.estimate sd.estimate mean.se rejection.rate
-       Y     1e-12  84  84        0.2441      0.0864  0.0859          0.773
+     tox     1e-12 126 126        0.2049       0.069  0.0707          0.818
 
 n.T          : number of observations in the treatment group
 n.C          : number of observations in the control group

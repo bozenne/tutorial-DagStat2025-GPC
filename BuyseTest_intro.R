@@ -66,19 +66,30 @@ BuyseTest.options(reinitialise = TRUE)
 
 ## * designing trial
 simFCT <- function(n.C, n.T){
-    out <- rbind(data.frame(Y=stats::rt(n.C, df = 5), group=0),
-                 data.frame(Y=stats::rt(n.T, df = 5) + 0.5, group=1))
-    return(out)
+    df.C <- data.frame(id = paste0("C",1:n.C), group = 0,
+                       tox = sample(1:6, n.C, replace=TRUE, prob= c(16.09, 15.42, 33.26, 26.18, 8.38, 0.67)/100),                       
+                       time = rweibull(n.C, scale = 9.995655, shape = 1.28993),
+                       event = 1)
+    df.T <- data.frame(id = paste0("T",1:n.T), group = 1,
+                       tox = sample(1:6, n.T, replace=TRUE, prob= c(8.21, 13.09, 31.29, 30.87, 12.05, 4.49)/100),                       
+                       time = rweibull(n.T, scale = 13.16543, shape = 1.575269),
+                       event = 1)
+    return(rbind(df.C,df.T))
 }
 set.seed(10)
 simFCT(2,2)
 
-e.power <- powerBuyseTest(formula = group ~ cont(Y),
+e.power <- powerBuyseTest(formula = group ~ tte(time, event, threshold = 1) + cont(tox, operator = "<0"),
                           sim = simFCT, sample.size = c(10,25,50),
                           n.rep = 100, seed = 10, cpus = 1)
 summary(e.power)
 
-e.n <- powerBuyseTest(formula = group ~ cont(Y),
+e.n <- powerBuyseTest(formula = group ~ tte(time,event, threshold = 1) + cont(tox, operator = "<0"),
                       sim = simFCT, power = 0.8,
                       n.rep = c(1000,10), seed = 10, trace = 2, cpus = 1)
 summary(e.n)
+
+e.n2 <- powerBuyseTest(group ~ tte(time,event, threshold = 1) + cont(tox, operator = "<0"),
+                       sim = simFCT, power = 0.8, max.sample.size = 5000,
+                       n.rep = c(1000,10), seed = 10, trace = 2, cpus = 1)
+summary(e.n2)

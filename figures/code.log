@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.8.26)  7 MAR 2025 16:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.8.26)  12 MAR 2025 11:42
 entering extended mode
 **./code.tex
 (code.tex
@@ -710,14 +710,14 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(25.6073pt, 563.0804pt, 25.6073pt)
+* h-part:(L,W,R)=(79.6678pt, 454.9594pt, 79.6678pt)
 * v-part:(T,H,B)=(28.45274pt, 671.11987pt, 95.39737pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=563.0804pt
+* \textwidth=454.9594pt
 * \textheight=671.11987pt
-* \oddsidemargin=-46.66269pt
-* \evensidemargin=-46.66269pt
+* \oddsidemargin=7.39781pt
+* \evensidemargin=7.39781pt
 * \topmargin=-80.81725pt
 * \headheight=12.0pt
 * \headsep=25.0pt
@@ -784,7 +784,7 @@ File: Udsrom.fd 1995/08/01 v0.1 Double stroke roman font definitions
 Here is how much of TeX's memory you used:
  19532 strings out of 478868
  389864 string characters out of 2856724
- 735777 words of memory out of 3000000
+ 735765 words of memory out of 3000000
  37101 multiletter control sequences out of 15000+600000
  412412 words of font info for 65 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -803,7 +803,7 @@ pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/
 Users/hpl802/AppData/Roaming/MiKTeX/2.9/fonts/type1/public/doublestroke/dsrom12
 .pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pf
 b>
-Output written on code.pdf (9 pages, 172147 bytes).
+Output written on code.pdf (9 pages, 172205 bytes).
 PDF statistics:
  105 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

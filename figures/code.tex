@@ -17,7 +17,7 @@
 \usepackage{multirow}
 \usepackage{nicefrac}
 \usepackage{geometry}
-\geometry{top=1cm,left=0.9cm,right=0.9cm}
+\geometry{top=1cm,left=2.8cm,right=2.8cm}
 \usepackage{mathrsfs,bbm,enumerate}
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}
@@ -235,8 +235,8 @@ plot(e.MBT, type = "racetrack")
 \clearpage
 
 \begin{Rcode}
-> rbind(confint(e.BTindiv, transformation = TRUE),
-        confint(e.BTindiv, transformation = FALSE)) 
+> rbind(confint(e.BT, transformation = TRUE),
+        confint(e.BT, transformation = FALSE)) 
 \end{Rcode}
        
 \begin{Routput}
@@ -246,8 +246,8 @@ eventtime1 0.1478776 0.08897931 -0.02651861 0.3222739    0 0.09652625
 \end{Routput}
 
 \begin{Rcode}
-> NTB <- coef(e.BTindiv)
-> sigma.NTB <- sqrt(crossprod(getIid(e.BTindiv)))
+> NTB <- coef(e.BT)
+> sigma.NTB <- sqrt(crossprod(getIid(e.BT)))
 > sigmaTrans.NTB <- sigma.NTB/(1-NTB^2)
 > c(estimate = NTB, se = sigmaTrans.NTB, p.value = 2*(1-pnorm(NTB/sigma.NTB)),
     pTrans.value = 2*(1-pnorm(atanh(NTB)/sigmaTrans.NTB)))

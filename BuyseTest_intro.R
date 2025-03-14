@@ -293,7 +293,7 @@ summary(e.n)
 
 
 ## more accurate sample size calculation using larger datasets to estimate the asymptotic variance
-e.n2 <- powerBuyseTest(group ~ tte(time,event, threshold = 1) + cont(tox, operator = "<0"),
+e.n2 <- powerBuyseTest(formula = group ~ tte(time,event, threshold = 1) + cont(tox, operator = "<0"),
                        sim = simFCT, power = 0.8, max.sample.size = 5000,
                        n.rep = c(1000,10), seed = 10, trace = 2, cpus = 1)
 summary(e.n2)

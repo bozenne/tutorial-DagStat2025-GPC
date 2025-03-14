@@ -43,7 +43,8 @@ packageVersion("BuyseTest")
 #+RESULTS:
 : [1] '3.1.0'
 
-To run one of the R scripts you will also need the package =dplyr=.
+To run one of the R scripts you will also need the packages =dplyr=
+and =survminer=. 
 
 * How to run the code
 

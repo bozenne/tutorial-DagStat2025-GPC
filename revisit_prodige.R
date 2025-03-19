@@ -45,14 +45,29 @@ data.frame(favorable = round(table.BR$favorable,1),
 sum(table.BR$favorable)       ## [1] 49.3886
 sum(table.BR$unfavorable)      ## [1] 38.26632
 
-## other measure of treatment effect
-summary(e.BR, statistic = "winRatio")
-coef(e.BR, statistic = "winRatio", cumulative = TRUE)
-##    OS_t6 toxicity_t2       OS_t2    toxicity 
-## 1.815742    1.593925    1.499402    1.392608 
-coef(e.BR, statistic = "winRatio", cumulative = FALSE)
+## ** decomposition
+e.BRfav <- coef(e.BR, statistic = "favorable", cumulative = FALSE)
+e.BRfav
+##      OS_t6 toxicity_t2       OS_t2    toxicity 
+## 0.28238768  0.10317657  0.05095573  0.05736603 
+e.BRunfav <- coef(e.BR, statistic = "unfavorable", cumulative = FALSE)
+e.BRunfav
+##      OS_t6 toxicity_t2       OS_t2    toxicity 
+## 0.15552191  0.12995841  0.05029263  0.04689025 
+cumsum(e.BRfav - e.BRunfav) ## match the Net Treatment Benefit
 ##     OS_t6 toxicity_t2       OS_t2    toxicity 
-## 1.8157421   1.2595728   1.0131848   0.8173871 
+## 0.1268658   0.1000839   0.1007470   0.1112228 
+
+coef(e.BR, statistic = "winRatio")
+##    OS_t6 toxicity_t2       OS_t2    toxicity 
+## 1.815742    1.350581    1.300045    1.290655 
+cumprod(e.BRfav/e.BRunfav) ## do not match the Win Ratio
+##    OS_t6 toxicity_t2       OS_t2    toxicity 
+## 1.815742    1.441554    1.460560    1.786865 
+cumsum(e.BRfav/e.BRunfav)  ## do not match the Win Ratio
+##    OS_t6 toxicity_t2       OS_t2    toxicity 
+## 1.815742    2.609662    3.622847    4.846257 
+
 
 ## ** sensitivity analysis
 ## requires the riskRegression package to be install for multiple testing adjustment

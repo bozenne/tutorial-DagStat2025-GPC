@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.8.26)  12 MAR 2025 11:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.8.26)  19 MAR 2025 18:50
 entering extended mode
 **./code.tex
 (code.tex
@@ -710,14 +710,14 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(79.6678pt, 454.9594pt, 79.6678pt)
+* h-part:(L,W,R)=(199.16928pt, 215.95644pt, 199.16928pt)
 * v-part:(T,H,B)=(28.45274pt, 671.11987pt, 95.39737pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=454.9594pt
+* \textwidth=215.95644pt
 * \textheight=671.11987pt
-* \oddsidemargin=7.39781pt
-* \evensidemargin=7.39781pt
+* \oddsidemargin=126.89929pt
+* \evensidemargin=126.89929pt
 * \topmargin=-80.81725pt
 * \headheight=12.0pt
 * \headsep=25.0pt
@@ -749,61 +749,96 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ] [5] [6
 
 ] [7]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 439
+LaTeX Font Info:    Trying to load font information for U+msa on input line 443
 .
  (C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 439
+LaTeX Font Info:    Trying to load font information for U+msb on input line 443
 .
 
 (C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for U+lasy on input line 43
-9.
+LaTeX Font Info:    Trying to load font information for U+lasy on input line 44
+3.
 
 (C:\Program Files\MiKTeX 2.9\tex/latex/base\ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
-LaTeX Font Info:    Trying to load font information for U+rsfs on input line 43
-9.
+LaTeX Font Info:    Trying to load font information for U+rsfs on input line 44
+3.
 
 (C:\Users\hpl802\AppData\Roaming\MiKTeX\2.9\tex/latex/jknappen\ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
 LaTeX Font Info:    Trying to load font information for U+dsrom on input line 4
-44.
+48.
 
 (C:\Users\hpl802\AppData\Roaming\MiKTeX\2.9\tex/latex/doublestroke\udsrom.fd
 File: Udsrom.fd 1995/08/01 v0.1 Double stroke roman font definitions
 )
+Overfull \hbox (133.22884pt too wide) detected at line 448
+[]
+ []
+
+
+Overfull \hbox (44.56389pt too wide) detected at line 458
+[]
+ []
+
+
+Overfull \hbox (36.09221pt too wide) detected at line 469
+[]
+ []
+
+
+Overfull \hbox (184.50127pt too wide) in paragraph at lines 474--486
+ [][] 
+ []
+
+
+Overfull \hbox (111.6993pt too wide) in paragraph at lines 471--490
+[]$\OML/cmm/m/it/12 U[] \OT1/cmr/m/n/12 = \U/msb/m/n/12 P [] \OMS/cmsy/m/n/12  
+ \U/msb/m/n/12 P []$
+ []
+
+
+Overfull \hbox (130.41783pt too wide) detected at line 512
+[]
+ []
+
 [8
 
-] [9] (code.aux) ) 
+]
+Overfull \hbox (200.00696pt too wide) in paragraph at lines 530--536
+[]$[]$ 
+ []
+
+[9] (code.aux) ) 
 Here is how much of TeX's memory you used:
  19532 strings out of 478868
  389864 string characters out of 2856724
- 735765 words of memory out of 3000000
+ 735785 words of memory out of 3000000
  37101 multiletter control sequences out of 15000+600000
  412412 words of font info for 65 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,17n,92p,490b,545s stack positions out of 5000i,500n,10000p,200000b,80000s
-<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
-mex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cmextra/cmex
-8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C
-:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program
- Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/Mi
-KTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/
-fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type
-1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/a
-msfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/
-cm/cmsy6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.
-pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/
-Users/hpl802/AppData/Roaming/MiKTeX/2.9/fonts/type1/public/doublestroke/dsrom12
-.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pf
-b>
-Output written on code.pdf (9 pages, 172205 bytes).
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cme
+x10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cmextra/cmex8.
+pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/
+Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program F
+iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKT
+eX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fo
+nts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/
+public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/ams
+fonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
+/cmsy6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pf
+b><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Us
+ers/hpl802/AppData/Roaming/MiKTeX/2.9/fonts/type1/public/doublestroke/dsrom12.p
+fb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+
+Output written on code.pdf (9 pages, 172285 bytes).
 PDF statistics:
  105 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

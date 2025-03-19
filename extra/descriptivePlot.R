@@ -3,9 +3,9 @@
 ## Author: Brice Ozenne
 ## Created: mar 19 2025 (18:42) 
 ## Version: 
-## Last-Updated: mar 19 2025 (18:42) 
+## Last-Updated: mar 19 2025 (19:05) 
 ##           By: Brice Ozenne
-##     Update #: 1
+##     Update #: 4
 ##----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -17,13 +17,15 @@
 
 library(ggpubr)
 library(riskRegression)
+library(prodlim)
+library(BuyseTest)
 library(survival)
 
 ## * load data
 data("prodige", package = "BuyseTest")
 head(prodige)
 
-## * Extra: descriptive benefit-risk illustration
+## * slide 56: descriptive benefit-risk illustration
 
 e.coxph <- coxph(Surv(OS,statusOS)~strata(treatment), data = prodige, x = TRUE, y = TRUE)
 pred.coxph <- predictCox(e.coxph, type = "survival", keep.newdata = TRUE)
@@ -81,6 +83,25 @@ ggEx2_KMtox
 
 ## ggsave(ggEx2_KMtox, filename = file.path("figures","gg-Ex2-KMtox.png"), width = 10, height = 5, dpi = 150)
 
+
+## * slide 73: Peron score rule example
+## ** Peron scoring rule (example)
+library(prodlim)
+df.exPeron <- rbind(data.frame(time = c(3,5,7), event = 1, group = "E"),
+                    data.frame(time = c(1,2,3,4,5), event = 1, group = "C"))
+KM.exPeron <- prodlim(Hist(time,event) ~ group, data = df.exPeron)
+plot(KM.exPeron, col = c("blue","orange"), confint = FALSE)
+
+
+e.exPeron <- BuyseTest(group ~ tte(time, event),
+                       model.tte = KM.exPeron, method.inference = "none", 
+                       data = data.frame(time = c(4.5,6,1.5), event = c(1,1,0), group = c("E","E","C")),
+                       trace = FALSE, keep.pairScore = TRUE)
+getPairScore(e.exPeron)
+##    index.C index.E favorable unfavorable neutral uninf weight
+##      <num>   <num>     <num>       <num>   <num> <num>  <num>
+## 1:       3       1      0.75        0.25       0     0      1
+## 2:       3       2      1.00        0.00       0     0      1
 
 
 ##----------------------------------------------------------------------

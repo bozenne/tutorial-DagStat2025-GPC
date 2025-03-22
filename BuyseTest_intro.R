@@ -187,8 +187,7 @@ model.tables(e.NTB_restricted)
 
 ## * Advanced Topics, part 2: covariate adjustment
 
-## see file revisit_prodige.R
-
+## see file extra/covariateAdjustment.R
 
 ## * Designing trial
 

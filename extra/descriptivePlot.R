@@ -3,9 +3,9 @@
 ## Author: Brice Ozenne
 ## Created: mar 19 2025 (18:42) 
 ## Version: 
-## Last-Updated: mar 19 2025 (19:05) 
+## Last-Updated: May  8 2025 (11:21) 
 ##           By: Brice Ozenne
-##     Update #: 4
+##     Update #: 5
 ##----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -41,8 +41,8 @@ ggEx2_KM <- ggEx2_KM + scale_shape_manual(name = "",
                                           labels = c("censoring","death"))
 ggEx2_KM <- ggEx2_KM + labs(x = "Months", y = "Probability of survival")
 ggEx2_KM <- ggEx2_KM + theme(text = element_text(size=20),
-                             axis.line = element_line(size = 1.25),
-                             axis.ticks = element_line(size = 2),
+                             axis.line = element_line(linewidth = 1.25),
+                             axis.ticks = element_line(linewidth = 2),
                              axis.ticks.length=unit(.25, "cm"),
                              legend.box.margin = margin(c(-40,0,0,0)),
                              legend.position="bottom",
@@ -68,8 +68,8 @@ ggEx2_tox <- ggEx2_tox + scale_x_discrete(breaks = c("C","T"), labels = c("C" = 
 
 ggEx2_tox <- ggEx2_tox + theme(text = element_text(size=20),
                                axis.text.x = element_text(colour = c("C" = "orange", "T" = "darkblue")),
-                               axis.line = element_line(size = 1.25),
-                               axis.ticks = element_line(size = 2),
+                               axis.line = element_line(linewidth = 1.25),
+                               axis.ticks = element_line(linewidth = 2),
                                axis.ticks.length=unit(.25, "cm"),
                                legend.box.margin = margin(c(-35,0,0,0)),
                                legend.position="bottom",

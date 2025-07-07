@@ -3,9 +3,9 @@
 ## Author: Brice Ozenne
 ## Created: mar 19 2025 (18:42) 
 ## Version: 
-## Last-Updated: mar 19 2025 (18:42) 
+## Last-Updated: jul  7 2025 (16:23) 
 ##           By: Brice Ozenne
-##     Update #: 1
+##     Update #: 5
 ##----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -92,11 +92,11 @@ confint(std.BR, endpoint = "toxicity") ## WARNING 1: uncertainty ignore variabil
 
 ## approach 1 with weights
 e.ref <- BuyseTest(treatment ~ tte(OS, statusOS, threshold = 6) + cont(toxicity, operator = "<0", threshold = 2),
-                   model.tte = prodlim(Hist(OS,statusOS)~treatment, data = prodige), data = prodige, trace = FALSE)
+                   model.tte = prodlim(Hist(OS,statusOS)~treatment, data = prodige), data = prodige, weightObs = prodige$weight, trace = FALSE)
 
 confint(e.ref, endpoint = "toxicity_t2")
-##              estimate         se   lower.ci  upper.ci null   p.value
-## toxicity_t2 0.1000839 0.03955895 0.02209791 0.1768593    0 0.0119687
+##              estimate         se   lower.ci  upper.ci null    p.value
+## toxicity_t2 0.1008404 0.03966976 0.02263037 0.1778236    0 0.01157877
 
 ## approach 2 explicit standardization (omitting the argument model.tte is prefered as survival probabilities would be treatment and sex dependent)
 prodige$sex2 <- ifelse(prodige$treatment=="T",prodige$sex=="M",prodige$sex=="F")
@@ -122,8 +122,26 @@ eTable.std <- rbind(data.frame(sex.C = names(eDelta.strata1),
 sum(eTable.std$pi.C*eTable.std$pi.T*eTable.std$Delta)
 ## [1] 0.1000839
 
+##    sex.C      pi.C sex.T      pi.T      Delta
+## M      M 0.4726368     M 0.5178147 0.11796774
+## F      F 0.5273632     F 0.4821853 0.08441808
+## M1     M 0.4726368     F 0.4821853 0.11712046
+## F1     F 0.5273632     M 0.5178147 0.08442592
 
-
+e.std <- BuyseTest(treatment ~ tte(OS, statusOS, threshold = 6) + cont(toxicity, operator = "<0", threshold = 2) + strata(sex),
+                   model.tte = prodlim(Hist(OS,statusOS)~treatment, data = prodige), data = prodige, pool.strata = "standardization", trace = FALSE)
+summary(e.std)
+## endpoint threshold strata total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)   delta  Delta CI [2.5% ; 97.5%]    p.value    
+##       OS         6 global   100.00        28.24          15.55      56.13     0.08  0.1282 0.1282   [0.0583;0.1968] 0.00034062 ***
+##                         M    24.47         6.83           3.51      14.12     0.02  0.1358                                        
+##                       F.M    27.31         7.43           4.73      15.13     0.02  0.0989                                        
+##                       M.F    22.79         6.70           3.10      12.98     0.02  0.1579                                        
+##                         F    25.43         7.28           4.22      13.91     0.02  0.1205                                        
+## toxicity         2 global    56.21        10.32          13.00      32.90     0.00 -0.0274 0.1008   [0.0229;0.1776] 0.01131799   *
+##                         M    14.14         2.71           3.15       8.28     0.00 -0.0178                                        
+##                       F.M    15.15         2.87           3.27       9.01     0.00 -0.0145                                        
+##                       M.F    12.99         2.29           3.22       7.49     0.00 -0.0407                                        
+##                         F    13.93         2.45           3.37       8.12     0.00 -0.0361                                       
 
 ##----------------------------------------------------------------------
 ### covariateAdjustment.R ends here

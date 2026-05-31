@@ -60,7 +60,7 @@ survdiff( Surv(Composite, statusComposite) ~ treatment, data = CHARM)
 
 
 ## * Time to worse event analysis
-BT_CHARM <- BuyseTest(treatment~tte(Mortality,statusMortality) + tte (Hospitalization,statusHospitalization), 
+BT_CHARM <- BuyseTest(treatment ~ tte(Mortality,statusMortality) + tte(Hospitalization,statusHospitalization), 
                       data=CHARM, scoring.rule = "Gehan", trace=0)
 summary(BT_CHARM)
 ##       Generalized pairwise comparisons with 2 prioritized endpoints

@@ -134,7 +134,7 @@ df.exPeron <- rbind(data.frame(time = c(3,5,7), event = 1, group = "E"),
 KM.exPeron <- prodlim(Hist(time,event) ~ group, data = df.exPeron)
 plot(KM.exPeron, col = c("blue","orange"), confint = FALSE)
 
-## ** Using build-in imputation approach
+## ** Using the default build-in imputation approach
 data(prodige, package = "BuyseTest")
 e.NTB_Gehan <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Gehan", data = prodige,
                          keep.pairScore = TRUE, trace = FALSE)
@@ -152,17 +152,14 @@ getPairScore(e.NTB_Peron)[1:2,]
 ## 1:       1     403 1.0000000     0.00000       0 0.0000000000      1
 ## 2:       2     403 0.5286551     0.47068       0 0.0006648516      1
 
-## ** Using your own imputation approach
-e.NTB_Latta <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Peron",
-                         data = prodige, trace = FALSE,
-                         model.tte = prodlim(Hist(OS, statusOS) ~ 1, data = prodige))
+e.NTB_Latta <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Latta", data = prodige,
+                         trace = FALSE)
 
-e.NTB_Efron <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Efron", data = prodige, trace = FALSE)
+e.NTB_Efron <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Efron", data = prodige,
+                         trace = FALSE)
 
-library(survival)
-e.NTB_Weibull <- BuyseTest(treatment ~ tte(OS, statusOS),
-                           data = prodige, trace = FALSE,
-                           model.tte = survreg(Surv(OS, statusOS) ~ treatment, data = prodige, dist = "weibull"))
+e.NTB_Weibull <- BuyseTest(treatment ~ tte(OS, statusOS), scoring.rule = "Weibull", data = prodige,
+                         trace = FALSE)
 
 M.results <- rbind(Gehan = model.tables(e.NTB_Gehan),
                    Peron = model.tables(e.NTB_Peron),
@@ -171,11 +168,20 @@ M.results <- rbind(Gehan = model.tables(e.NTB_Gehan),
                    Weibull = model.tables(e.NTB_Weibull))
 print(M.results, digits = 3)
 ##         endpoint total favorable unfavorable  neutral    uninf  Delta lower.ci upper.ci p.value
-## Gehan         OS   100      35.2        31.8 0.000591 33.09049 0.0339 -0.03057   0.0981  0.3026
-## Peron         OS   100      54.7        45.2 0.000967  0.02500 0.0951  0.00838   0.1804  0.0317
-## Efron         OS   100      54.7        45.2 0.025971  0.00000 0.0951  0.00834   0.1805  0.0317
-## Latta         OS   100      52.8        47.0 0.099400  0.04895 0.0582 -0.01539   0.1313  0.1210
-## Weibull       OS   100      50.9        43.3 5.855714  0.00413 0.0758 -0.00830   0.1589  0.0772
+## Gehan         OS   100      35.2        31.8 0.000591 3.31e+01 0.0339 -0.03057   0.0981  0.3026
+## Peron         OS   100      54.7        45.2 0.000967 2.50e-02 0.0951  0.00838   0.1804  0.0317
+## Efron         OS   100      54.7        45.2 0.025971 0.00e+00 0.0951  0.00834   0.1805  0.0317
+## Latta         OS   100      52.8        47.0 0.099400 4.90e-02 0.0582 -0.01539   0.1313  0.1210
+## Weibull       OS   100      54.1        45.9 0.000591 8.26e-05 0.0826 -0.00619   0.1701  0.0682
+
+## ** Using your own imputation approach
+library(survival)
+e.NTB_Weibull2 <- BuyseTest(treatment ~ tte(OS, statusOS),
+                            data = prodige, trace = FALSE,
+                            model.tte = survreg(Surv(OS, statusOS) ~ treatment, data = prodige, dist = "weibull"))
+confint(e.NTB_Weibull2) ## same as e.NTB_Weibull
+##      estimate         se     lower.ci  upper.ci null    p.value
+## OS 0.08262516 0.04510037 -0.006188672 0.1701457    0 0.06820061
 
 ## ** What about administrative censoring?
 

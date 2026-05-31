@@ -3,7 +3,7 @@
 ## Author: Brice Ozenne
 ## Created: mar 19 2025 (18:42) 
 ## Version: 
-## Last-Updated: Jul 24 2025 (10:03) 
+## Last-Updated: May 31 2026 (23:23) 
 ##           By: Brice Ozenne
 ##     Update #: 6
 ##----------------------------------------------------------------------
@@ -69,17 +69,17 @@ std.BR <- BuyseTest(treatment ~ tte(OS, statusOS, threshold = 6) + cont(toxicity
                     pool.strata = "standardization", data = prodige)
 summary(std.BR, digit = c(2,3,2))
  ## endpoint threshold strata total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)  delta Delta CI [2.5% ; 97.5%] p.value    
- ##       OS         6 global   100.00        28.16          15.71      56.04     0.09  0.126 0.126     [0.056;0.195] 0.00045 ***
+ ##       OS        +6 global   100.00        28.16          15.71      56.04     0.09  0.126 0.126     [0.056;0.195] 0.00045 ***
  ##                         M    24.47         6.88           3.42      14.14     0.04  0.142                                    
  ##                       F.M    27.31         7.42           4.90      14.97     0.02  0.092                                    
  ##                       M.F    22.79         6.66           3.00      13.11     0.02  0.160                                    
  ##                         F    25.43         7.20           4.39      13.83     0.01  0.111                                    
- ## toxicity         2 global    56.13        10.27          13.01      32.85     0.00 -0.028 0.098      [0.02;0.175] 0.01416   *
+ ## toxicity        +2 global    56.13        10.27          13.01      32.85     0.00 -0.028 0.098      [0.02;0.175] 0.01416   *
  ##                         M    14.18         2.76           3.14       8.29     0.00 -0.016                                    
  ##                       F.M    14.99         2.79           3.25       8.94     0.00 -0.017                                    
  ##                       M.F    13.13         2.34           3.24       7.55     0.00 -0.040                                    
  ##                         F    13.84         2.38           3.38       8.07     0.00 -0.039                                    
- ##       OS         2 global    32.85         5.08           5.02      22.71     0.04  0.001 0.099     [0.017;0.179] 0.01754   *
+ ##       OS        +2 global    32.85         5.08           5.02      22.71     0.04  0.001 0.099     [0.017;0.179] 0.01754   *
  ##                         M     8.29         1.11           1.23       5.92     0.02 -0.005                                    
  ##                       F.M     8.94         1.37           1.39       6.19     0.00 -0.001                                    
  ##                       M.F     7.55         1.22           1.12       5.18     0.02  0.004                                    
@@ -89,7 +89,6 @@ summary(std.BR, digit = c(2,3,2))
  ##                       F.M     6.19         1.64           1.24       3.30     0.00  0.015                                    
  ##                       M.F     5.20         1.24           1.10       2.86     0.00  0.006                                    
  ##                         F     5.41         1.44           1.15       2.82     0.00  0.011                                    
-
 coef(s.BR) ## marginal
 ##      OS_t6 toxicity_t2       OS_t2    toxicity 
 ## 0.12592885  0.09833291  0.09802122  0.10802346 
@@ -129,9 +128,6 @@ Vmat2 <- crossprod(cbind(getIid(marginal.BR, endpoint = "toxicity"),getIid(strat
 coef(marginal.BR, endpoint = "toxicity") -  Vmat2[1,-1,drop=FALSE] %*% solve(Vmat2[-1,-1,drop=FALSE]) %*% coef(strata.BR) ## 0.1122007
 ## variance
 Vmat2[1,1] - Vmat2[1,-1,drop=FALSE] %*% solve(Vmat2[-1,-1,drop=FALSE]) %*% Vmat2[-1,1,drop=FALSE] ## 0.001847724
-
-
-
 
 ##----------------------------------------------------------------------
 ### covariateAdjustment.R ends here

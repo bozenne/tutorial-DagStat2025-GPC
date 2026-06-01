@@ -3,9 +3,9 @@
 ## Author: Brice Ozenne
 ## Created: mar 19 2025 (18:42) 
 ## Version: 
-## Last-Updated: May  8 2025 (11:21) 
+## Last-Updated: Jun  1 2026 (11:51) 
 ##           By: Brice Ozenne
-##     Update #: 5
+##     Update #: 6
 ##----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -29,7 +29,7 @@ head(prodige)
 
 e.coxph <- coxph(Surv(OS,statusOS)~strata(treatment), data = prodige, x = TRUE, y = TRUE)
 pred.coxph <- predictCox(e.coxph, type = "survival", keep.newdata = TRUE)
-ggEx2_KM <- autoplot(pred.coxph, group.by = "strata", plot = FALSE)$plot
+ggEx2_KM <- autoplot(pred.coxph, group.by = "strata")$plot
 ggEx2_KM <- ggEx2_KM + scale_colour_manual(name = "",
                                            values = c("T" = "darkblue",
                                                       "C" = "darkorange"),
